@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Logowanie - Finance Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h4 class="card-title text-center mb-4 fw-bold">Zaloguj się</h4>
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger py-2 small">
+                        Błędny login lub hasło.
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Użytkownik</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Hasło</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Zaloguj</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
