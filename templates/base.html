@@ -69,9 +69,6 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'transaction_list' %}active{% endif %}" href="{% url 'transaction_list' %}">💳 Transakcje</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'category_list' %}active{% endif %}" href="{% url 'category_list' %}">🏷️ Kategorie</a>
-                    </li>
                     <li class="nav-item mt-3 pt-3 border-top">
                         <a class="nav-link text-secondary" href="/admin/">⚙️ Panel Admina</a>
                     </li>
@@ -80,6 +77,16 @@
         {% endif %}
 
         <main class="main-content">
+            {% if messages %}
+                <div class="container-fluid px-0 mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
     </div>

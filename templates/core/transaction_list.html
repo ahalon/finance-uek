@@ -1,13 +1,97 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Transakcje - Finance Manager{% endblock %}
 
 {% block content %}
 <div class="card shadow-sm border-0 p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold mb-0">Lista transakcji</h3>
-        <button class="btn btn-primary btn-sm">+ Dodaj transakcję</button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Twoje transakcje</h3>
+            <p class="text-muted small mb-0">Historia operacji giełdowych</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+            + Dodaj transakcję
+        </button>
     </div>
-    <p class="text-muted">Tutaj będzie tabela z nazwami ETF-ów</p>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Data</th>
+                    <th>Aktywo</th>
+                    <th>Typ</th>
+                    <th>Ilość</th>
+                    <th>Cena</th>
+                    <th>Prowizja</th>
+                    <th>Łączny koszt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                    <tr>
+                        <td>{{ tx.date|date:"Y-m-d" }}</td>
+                        <td>
+                            <strong>{{ tx.asset.ticker }}</strong> 
+                            <small class="text-muted d-block">{{ tx.asset.name }}</small>
+                        </td>
+                        <td>
+                            {% if tx.transaction_type == 'BUY' %}
+                                <span class="badge bg-success">KUPNO</span>
+                            {% else %}
+                                <span class="badge bg-danger">SPRZEDAŻ</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ tx.quantity }}</td>
+                        <td>{{ tx.price }} {{ tx.asset.currency }}</td>
+                        <td>{{ tx.fee }} {{ tx.asset.currency }}</td>
+                        <td class="fw-bold">{{ tx.total_cost|floatformat:2 }} {{ tx.asset.currency }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            Brak transakcji. Kliknij przycisk powyżej, aby dodać pierwszą!
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<div class="modal fade" id="addTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Nowa transakcja</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Zapisz transakcję</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if form.errors %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var modalEl = document.getElementById('addTransactionModal');
+        if (modalEl) {
+            var myModal = new bootstrap.Modal(modalEl);
+            myModal.show();
+        }
+    });
+</script>
+{% endif %}
 {% endblock %}
