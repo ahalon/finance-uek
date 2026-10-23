@@ -10,13 +10,21 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         transactions = (
             Transaction.objects
             .filter(user=self.request.user)
             .select_related('asset')
+            .order_by('date', 'created_at')
         )
-        summary = calculate_portfolio_summary(transactions)
-        context.update(summary)
-        context['username'] = self.request.user.username
-        return context
 
+        summary = calculate_portfolio_summary(transactions)
+
+        recent_transactions = transactions.order_by('-date', '-created_at')[:5]
+
+        context.update(summary)
+        context.update({
+            'username': self.request.user.username,
+            'recent_transactions': recent_transactions,
+        })
+        return context
