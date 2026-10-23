@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,14 +47,14 @@
         <div class="d-flex align-items-center">
             {% if user.is_authenticated %}
                 <span class="text-white me-3 small">
-                    Zalogowany: <strong>{{ user.username }}</strong>
+                    Logged in as: <strong>{{ user.username }}</strong>
                 </span>
                 <form method="post" action="{% url 'logout' %}" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Wyloguj</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Log out</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light">Zaloguj się</a>
+                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light">Log in</a>
             {% endif %}
         </div>
     </nav>
@@ -64,13 +64,16 @@
             <aside class="sidebar p-2 shadow-sm d-none d-md-block">
                 <ul class="nav nav-pills flex-column">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">📊 Pulpit</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">📊 Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'transaction_list' %}active{% endif %}" href="{% url 'transaction_list' %}">💳 Transakcje</a>
+                        <a class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'transaction_list' %}">💳 Transactions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'asset' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'asset_list' %}">📈 Assets</a>
                     </li>
                     <li class="nav-item mt-3 pt-3 border-top">
-                        <a class="nav-link text-secondary" href="/admin/">⚙️ Panel Admina</a>
+                        <a class="nav-link text-secondary" href="/admin/">⚙️ Admin Panel</a>
                     </li>
                 </ul>
             </aside>
@@ -82,7 +85,7 @@
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
                             {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 </div>

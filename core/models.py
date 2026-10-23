@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Asset(models.Model):
@@ -26,12 +27,15 @@ class Transaction(models.Model):
     quantity = models.DecimalField(max_digits=12, decimal_places=4)
     price = models.DecimalField(max_digits=12, decimal_places=4)
     fee = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
 
     @property
     def total_cost(self):
         return (self.quantity * self.price) + self.fee
 
     def __str__(self):
-        return f"{self.transaction_type} {self.quantity} {self.asset.ticker} @ {self.price}"
+        return f"{self.get_transaction_type_display()} {self.quantity} {self.asset.ticker} @ {self.price}"

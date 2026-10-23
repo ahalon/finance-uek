@@ -29,11 +29,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Zewnętrzne biblioteki
+    # Third-party apps
     'crispy_forms',
     'crispy_bootstrap5',
 
-    # Twoja aplikacja
+    # Local apps
     'core',
 ]
 
@@ -100,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'pl'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Warsaw'
 
@@ -114,7 +114,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Wskazanie folderu na lokalne pliki statyczne (Bootstrap CSS/JS)
+# Static files local directory (Bootstrap CSS/JS)
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
@@ -130,10 +130,10 @@ MAILERS = {
 }
 
 
-# Konfiguracja Crispy Forms (Bootstrap 5)
+# Crispy Forms configuration (Bootstrap 5)
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Przekierowania autoryzacji
+# Authentication redirects
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
