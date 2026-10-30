@@ -1,0 +1,65 @@
+{% for asset in assets %}
+    <tr id="asset-row-{{ asset.pk }}">
+        <td>
+            <span class="badge bg-light text-dark border fs-6 fw-bold">
+                {{ asset.ticker }}
+            </span>
+        </td>
+        <td>{{ asset.name }}</td>
+        <td>
+            <span class="badge bg-secondary">{{ asset.currency }}</span>
+        </td>
+        <td>
+            {{ asset.transactions.count }} transaction{{ asset.transactions.count|pluralize }}
+        </td>
+        <td class="text-end text-nowrap">
+            <a href="{% url 'asset_edit' asset.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                ✏️ Edit
+            </a>
+            {% if asset.transactions.exists %}
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete an asset with existing transactions">
+                    🔒 Locked
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAssetModal{{ asset.pk }}" title="Delete">
+                    🗑️ Delete
+                </button>
+            {% endif %}
+        </td>
+    </tr>
+
+    {% if not asset.transactions.exists %}
+        <div class="modal fade" id="deleteAssetModal{{ asset.pk }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold text-danger">Delete Asset</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-3">
+                        <p class="mb-2">Are you sure you want to delete asset <strong>{{ asset.ticker }} - {{ asset.name }}</strong>?</p>
+                        <p class="text-danger small mb-0">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" 
+                                class="btn btn-danger" 
+                                hx-post="{% url 'asset_delete' asset.pk %}" 
+                                hx-target="#asset-row-{{ asset.pk }}" 
+                                hx-swap="outerHTML" 
+                                data-bs-dismiss="modal">
+                            Delete Asset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% empty %}
+    <tr>
+        <td colspan="5" class="text-center text-muted py-4">
+            No assets found.
+        </td>
+    </tr>
+{% endfor %}
+

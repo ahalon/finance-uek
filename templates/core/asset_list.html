@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="card shadow-sm border-0 p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h3 class="fw-bold mb-1">Available Assets</h3>
             <p class="text-muted small mb-0">Stocks, ETFs, and other financial instruments</p>
@@ -13,6 +13,24 @@
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssetModal">
             + Add New Asset
         </button>
+    </div>
+
+    <!-- HTMX Live Search -->
+    <div class="mb-3 position-relative">
+        <input type="search"
+               name="q"
+               value="{{ search_query }}"
+               class="form-control"
+               placeholder="🔍 Live Search: type ticker (e.g. AAPL, MSFT) or name..."
+               hx-get="{% url 'asset_list' %}"
+               hx-trigger="keyup changed delay:300ms, search"
+               hx-target="#asset-table-body"
+               hx-indicator="#asset-search-spinner">
+        <div id="asset-search-spinner" class="htmx-indicator position-absolute top-50 end-0 translate-middle-y me-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Searching...</span>
+            </div>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -26,68 +44,8 @@
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for asset in assets %}
-                    <tr>
-                        <td>
-                            <span class="badge bg-light text-dark border fs-6 fw-bold">
-                                {{ asset.ticker }}
-                            </span>
-                        </td>
-                        <td>{{ asset.name }}</td>
-                        <td>
-                            <span class="badge bg-secondary">{{ asset.currency }}</span>
-                        </td>
-                        <td>
-                            {{ asset.transactions.count }} transaction{{ asset.transactions.count|pluralize }}
-                        </td>
-                        <td class="text-end text-nowrap">
-                            <a href="{% url 'asset_edit' asset.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                ✏️ Edit
-                            </a>
-                            {% if asset.transactions.exists %}
-                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete an asset with existing transactions">
-                                    🔒 Locked
-                                </button>
-                            {% else %}
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAssetModal{{ asset.pk }}" title="Delete">
-                                    🗑️ Delete
-                                </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-
-                    {% if not asset.transactions.exists %}
-                        <!-- Modal confirm delete asset -->
-                        <div class="modal fade" id="deleteAssetModal{{ asset.pk }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header border-0 pb-0">
-                                        <h5 class="modal-title fw-bold text-danger">Delete Asset</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body py-3">
-                                        <p class="mb-2">Are you sure you want to delete asset <strong>{{ asset.ticker }} - {{ asset.name }}</strong>?</p>
-                                        <p class="text-danger small mb-0">This action cannot be undone.</p>
-                                    </div>
-                                    <div class="modal-footer border-0 pt-0">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <form method="post" action="{% url 'asset_delete' asset.pk %}" class="d-inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger">Delete Asset</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
-                            No assets defined yet. Click the button above to add your first asset!
-                        </td>
-                    </tr>
-                {% endfor %}
+            <tbody id="asset-table-body">
+                {% include 'core/partials/asset_rows.html' %}
             </tbody>
         </table>
     </div>
@@ -129,4 +87,3 @@
 </script>
 {% endif %}
 {% endblock %}
-

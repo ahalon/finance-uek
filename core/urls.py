@@ -6,6 +6,7 @@ from core.views import (
     TransactionCreateView,
     TransactionUpdateView,
     TransactionDeleteView,
+    TransactionEstimateView,
     AssetListView,
     AssetCreateView,
     AssetUpdateView,
@@ -17,6 +18,7 @@ urlpatterns = [
     path('accounts/register/', RegisterView.as_view(), name='register'),
     path('transactions/', TransactionListView.as_view(), name='transaction_list'),
     path('transactions/create/', TransactionCreateView.as_view(), name='transaction_create'),
+    path('transactions/estimate/', TransactionEstimateView.as_view(), name='transaction_estimate'),
     path('transactions/<int:pk>/edit/', TransactionUpdateView.as_view(), name='transaction_edit'),
     path('transactions/<int:pk>/delete/', TransactionDeleteView.as_view(), name='transaction_delete'),
     path('assets/', AssetListView.as_view(), name='asset_list'),
@@ -24,4 +26,3 @@ urlpatterns = [
     path('assets/<int:pk>/edit/', AssetUpdateView.as_view(), name='asset_edit'),
     path('assets/<int:pk>/delete/', AssetDeleteView.as_view(), name='asset_delete'),
 ]
-

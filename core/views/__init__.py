@@ -5,6 +5,7 @@ from .transactions import (
     TransactionCreateView,
     TransactionUpdateView,
     TransactionDeleteView,
+    TransactionEstimateView,
 )
 from .assets import (
     AssetListView,
@@ -13,7 +14,6 @@ from .assets import (
     AssetDeleteView,
 )
 
-# Backwards compatibility function aliases
 register = RegisterView.as_view()
 dashboard = DashboardView.as_view()
 transaction_list = TransactionListView.as_view()
@@ -30,6 +30,7 @@ __all__ = [
     'TransactionCreateView',
     'TransactionUpdateView',
     'TransactionDeleteView',
+    'TransactionEstimateView',
     'AssetListView',
     'AssetCreateView',
     'AssetUpdateView',
@@ -43,4 +44,3 @@ __all__ = [
     'asset_edit',
     'asset_delete',
 ]
-

@@ -40,8 +40,9 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <nav class="navbar navbar-dark bg-dark px-3 sticky-top shadow-sm">
         <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">💰 Finance Manager</a>
         <div class="d-flex align-items-center">

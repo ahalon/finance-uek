@@ -273,3 +273,46 @@ class ViewTests(TestCase):
         response = self.client.post(reverse('asset_delete', kwargs={'pk': unused_asset.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Asset.objects.filter(pk=unused_asset.pk).exists())
+
+    def test_transaction_list_htmx_search(self):
+        self.client.login(username='investor', password='password123')
+        response = self.client.get(reverse('transaction_list') + '?q=VOO', HTTP_HX_REQUEST='true')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'core/partials/transaction_rows.html')
+        self.assertContains(response, 'VOO')
+
+    def test_transaction_delete_htmx(self):
+        self.client.login(username='investor', password='password123')
+        response = self.client.post(
+            reverse('transaction_delete', kwargs={'pk': self.tx.pk}),
+            HTTP_HX_REQUEST='true'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
+        self.assertFalse(Transaction.objects.filter(pk=self.tx.pk).exists())
+
+    def test_asset_list_htmx_search(self):
+        self.client.login(username='investor', password='password123')
+        response = self.client.get(reverse('asset_list') + '?q=VOO', HTTP_HX_REQUEST='true')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'core/partials/asset_rows.html')
+        self.assertContains(response, 'VOO')
+
+    def test_asset_delete_htmx(self):
+        unused_asset = Asset.objects.create(ticker='NVDA', name='NVIDIA', currency='USD')
+        self.client.login(username='investor', password='password123')
+        response = self.client.post(
+            reverse('asset_delete', kwargs={'pk': unused_asset.pk}),
+            HTTP_HX_REQUEST='true'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
+        self.assertFalse(Asset.objects.filter(pk=unused_asset.pk).exists())
+
+    def test_transaction_estimate(self):
+        self.client.login(username='investor', password='password123')
+        url = reverse('transaction_estimate') + f'?asset={self.asset.pk}&quantity=10&price=150&fee=5'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '1,505.00 USD')
+        self.assertContains(response, '6,020.00 PLN')
